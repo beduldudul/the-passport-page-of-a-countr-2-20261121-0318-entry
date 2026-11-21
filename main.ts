@@ -28,6 +28,13 @@ const PNG_MAGIC = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 if (!bytes.subarray(0, 8).equals(PNG_MAGIC)) {
   throw new Error("entry.png is not a PNG file");
 }
+
+// The gate expects a 1024x1024 image: check the IHDR dimensions.
+const width = bytes.readUInt32BE(16);
+const height = bytes.readUInt32BE(20);
+if (width !== 1024 || height !== 1024) {
+  throw new Error(`entry.png is ${width}x${height}, expected 1024x1024`);
+}
 if (bytes.length > 1048576) {
   throw new Error(`entry.png is ${bytes.length} bytes, over the 1 MiB limit`);
 }
